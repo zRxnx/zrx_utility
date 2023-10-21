@@ -5,7 +5,8 @@ OX_INV = exports.ox_inventory
 BRIDGE = {
     Framework = {
         type = 'ox',
-        version = GetResourceMetadata('ox_core', 'version', 0)
+        version = GetResourceMetadata('ox_core', 'version', 0),
+        core = OX,
     },
 
     Func = {}

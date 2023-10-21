@@ -5,7 +5,8 @@ OX_INV = exports.ox_inventory
 BRIDGE = {
     Framework = {
         type = 'qbx',
-        version = GetResourceMetadata('qbx_core', 'version', 0)
+        version = GetResourceMetadata('qbx_core', 'version', 0),
+        core = QBX,
     },
 
     Func = {}

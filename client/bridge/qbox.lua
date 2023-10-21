@@ -5,7 +5,8 @@ LOADED = false
 BRIDGE = {
     Framework = {
         type = 'qbx',
-        version = GetResourceMetadata('qbx_core', 'version', 0)
+        version = GetResourceMetadata('qbx_core', 'version', 0),
+        core = QBX,
     },
 
     Func = {}
@@ -57,6 +58,11 @@ BRIDGE.Func.getAccount = function(account)
     end
 
     return {}
+end
+
+---@param id number
+BRIDGE.Func.payBill = function(id)
+    print('payBill doesnt exist for qbx')
 end
 
 --| Meta |--

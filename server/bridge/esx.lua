@@ -6,7 +6,8 @@ MYSQL = exports.oxmysql
 BRIDGE = {
     Framework = {
         type = 'esx',
-        version = GetResourceMetadata('es_extended', 'version', 0)
+        version = GetResourceMetadata('es_extended', 'version', 0),
+        core = ESX,
     },
 
     Func = {}

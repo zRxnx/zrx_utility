@@ -4,7 +4,8 @@ ESX = exports.es_extended:getSharedObject()
 BRIDGE = {
     Framework = {
         type = 'esx',
-        version = GetResourceMetadata('es_extended', 'version', 0)
+        version = GetResourceMetadata('es_extended', 'version', 0),
+        core = ESX,
     },
 
     Func = {}
@@ -38,6 +39,13 @@ end
 BRIDGE.Func.notification = function(msg, title, type, color, time)
     Config.Notification(nil, msg, title, type, color, time)
 end
+
+---@param id number
+BRIDGE.Func.payBill = function(id)
+    ESX.TriggerServerCallback('esx_billing:payBill', function()
+    end, id)
+end
+
 
 --| Account |--
 ---@return table

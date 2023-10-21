@@ -6,7 +6,8 @@ LOADED = false
 BRIDGE = {
     Framework = {
         type = 'ox',
-        version = GetResourceMetadata('ox_core', 'version', 0)
+        version = GetResourceMetadata('ox_core', 'version', 0),
+        core = OX,
     },
 
     Func = {}
@@ -40,6 +41,11 @@ end
 ---@param time number
 BRIDGE.Func.notification = function(msg, title, type, color, time)
     Config.Notification(nil, msg, title, type, color, time)
+end
+
+---@param id number
+BRIDGE.Func.payBill = function(id)
+    print('payBill doesnt exist for OX')
 end
 
 --| Account |--
