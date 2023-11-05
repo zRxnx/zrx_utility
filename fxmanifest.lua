@@ -5,7 +5,7 @@ use_experimental_fxv2_oal 'yes'
 
 author 'zRxnx'
 description 'Utility library for my resources'
-version '1.0.1'
+version '1.1.0'
 
 shared_scripts {
     'configuration/config.lua',
@@ -15,6 +15,7 @@ shared_scripts {
 client_scripts {
     'client/*.lua',
     'client/keymapping/*.lua',
+    'client/menu/*.lua',
     'client/bridge/*.lua',
 }
 
