@@ -65,7 +65,7 @@ BRIDGE.Func.getBills = function(player)
     local results = MYSQL:query_async('SELECT * FROM `billing` WHERE `identifier` = ?', { xPlayer.identifier })
     local BILLS = {}
 
-    for k, data in pairs(results) do
+    for i, data in pairs(results) do
         BILLS[#BILLS + 1] = {
             id = data.id,
             label = data.label,
@@ -83,7 +83,7 @@ BRIDGE.Func.getLicenses = function(player)
     local results = MYSQL:query_async('SELECT * FROM `user_licenses` WHERE `owner` = ?', { xPlayer.identifier })
     local LICENSES = {}
 
-    for k, data in pairs(results) do
+    for i, data in pairs(results) do
         LICENSES[#LICENSES + 1] = {
             id = data.id,
             type = data.type,
@@ -315,12 +315,14 @@ BRIDGE.Func.getVariables = function(player)
         loadout = {}
     end
 
-    for i, data in pairs(var.status) do
-        status[data.name] = {
-            name = data.name,
-            percent = data.percent,
-            value = data.val
-        }
+    if var?.status then
+        for i, data in pairs(var.status) do
+            status[data.name] = {
+                name = data.name,
+                percent = data.percent,
+                value = data.val
+            }
+        end
     end
 
     return {
