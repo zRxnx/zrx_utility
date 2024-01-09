@@ -1,7 +1,7 @@
 ---@diagnostic disable: duplicate-set-field
 if GetResourceState('es_extended') == 'missing' then return end
 ESX = exports.es_extended:getSharedObject()
-OX_INV = exports.ox_inventory
+OX_INV = exports?.ox_inventory
 MYSQL = exports.oxmysql
 BRIDGE = {
     Framework = {
@@ -65,7 +65,7 @@ BRIDGE.Func.getBills = function(player)
     local results = MYSQL:query_async('SELECT * FROM `billing` WHERE `identifier` = ?', { xPlayer.identifier })
     local BILLS = {}
 
-    for i, data in pairs(results) do
+    for k, data in pairs(results) do
         BILLS[#BILLS + 1] = {
             id = data.id,
             label = data.label,
@@ -83,7 +83,7 @@ BRIDGE.Func.getLicenses = function(player)
     local results = MYSQL:query_async('SELECT * FROM `user_licenses` WHERE `owner` = ?', { xPlayer.identifier })
     local LICENSES = {}
 
-    for i, data in pairs(results) do
+    for k, data in pairs(results) do
         LICENSES[#LICENSES + 1] = {
             id = data.id,
             type = data.type,
@@ -119,7 +119,7 @@ end
 BRIDGE.Func.getSocietyMoney = function(job)
     local money = promise.new()
 
-    TriggerEvent('esx_addonaccount:getSharedAccount', ('society_%s'):format(job), function(account)
+    TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. job, function(account)
         money:resolve(account.money)
     end)
 
@@ -138,11 +138,7 @@ end
 ---@param amount number
 BRIDGE.Func.setSocietyMoney = function(job, amount)
 	TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. job, function(account)
-        account.removeMoney(account.money)
-	end)
-
-    TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. job, function(account)
-        account.addMoney(amount)
+        account.setMoney(account.money)
 	end)
 end
 
@@ -272,7 +268,7 @@ BRIDGE.Func.hasItem = function(player, item, metadata, strict)
         return OX_INV:GetItemCount(player, item, metadata, strict) > 0
     end
 
-    return ESX.GetPlayerFromId(player).hasItem(item)
+    return ESX.GetPlayerFromId(player).hasItem(item) == true
 end
 
 --| Meta |--

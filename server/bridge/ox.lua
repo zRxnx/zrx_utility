@@ -90,7 +90,7 @@ BRIDGE.Func.getJobs = function()
 end
 
 --| Society |--
----@param player number
+---@param job number
 --@return table
 BRIDGE.Func.getSocietyMoney = function(job)
     print('getSocietyMoney doesnt exist for OX')

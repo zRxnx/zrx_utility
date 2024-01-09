@@ -1,4 +1,4 @@
----@diagnostic disable: duplicate-set-field
+---@diagnostic disable: duplicate-set-field, undefined-field
 if GetResourceState('es_extended') == 'missing' then return end
 ESX = exports.es_extended:getSharedObject()
 BRIDGE = {
@@ -77,7 +77,6 @@ BRIDGE.Func.getVariables = function()
     local job = xPlayer.job
 
     return {
-        player = player,
         identifier = xPlayer.identifier,
         group = xPlayer.group,
 
