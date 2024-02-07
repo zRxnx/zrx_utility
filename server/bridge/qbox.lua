@@ -9,7 +9,13 @@ BRIDGE = {
         core = QBX,
     },
 
-    Func = {}
+    Func = {},
+    Enums = {
+        PLAYER_DROPPED = 'zrx_utility:bridge:playerDropped',
+        PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
+        PLAYER_DEATH = 'zrx_utility:bridge:onPlayerDeath',
+        PLAYER_JOB = 'zrx_utility:bridge:setJob',
+    }
 }
 
 --| Handlers |--

@@ -10,7 +10,13 @@ BRIDGE = {
         core = ESX,
     },
 
-    Func = {}
+    Func = {},
+    Enums = {
+        PLAYER_DROPPED = 'zrx_utility:bridge:playerDropped',
+        PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
+        PLAYER_DEATH = 'zrx_utility:bridge:onPlayerDeath',
+        PLAYER_JOB = 'zrx_utility:bridge:setJob',
+    }
 }
 
 --| Handlers |--
@@ -117,13 +123,17 @@ end
 ---@param job number
 ---@return table
 BRIDGE.Func.getSocietyMoney = function(job)
-    local money = promise.new()
+    local p = promise.new()
+    local money = 0
 
     TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. job, function(account)
-        money:resolve(account.money)
+        money = account.money
+        p:resolve()
     end)
 
-    return Citizen.Await(money)
+    Citizen.Await(p)
+
+    return money
 end
 
 ---@param job number
@@ -138,7 +148,7 @@ end
 ---@param amount number
 BRIDGE.Func.setSocietyMoney = function(job, amount)
 	TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. job, function(account)
-        account.setMoney(account.money)
+        account.setMoney(amount)
 	end)
 end
 
@@ -158,6 +168,8 @@ end
 BRIDGE.Func.addAccountMoney = function(player, account, amount, reason)
     if Config.Framework.ESX.inventory == 'ox_inventory' and Config.Framework.ESX.inventoryAccounts[account] then
         OX_INV:AddItem(player, account, amount)
+    elseif Config.Framework.ESX.inventory == 'qs-inventory' and Config.Framework.ESX.inventoryAccounts[account] then
+        exports['qs-inventory']:AddItem(player, account, amount)
     else
         ESX.GetPlayerFromId(player).addAccountMoney(account, amount, reason)
     end
@@ -171,6 +183,9 @@ BRIDGE.Func.setAccountMoney = function(player, account, amount, reason)
     if Config.Framework.ESX.inventory == 'ox_inventory' and Config.Framework.ESX.inventoryAccounts[account] then
         OX_INV:RemoveItem(player, account, OX_INV:GetItemCount(player, account))
         OX_INV:AddItem(player, account, amount)
+    elseif Config.Framework.ESX.inventory == 'qs-inventory' and Config.Framework.ESX.inventoryAccounts[account] then
+        exports['qs-inventory']:RemoveItem(player, account, exports['qs-inventory']:GetItemTotalAmount(player, account))
+        exports['qs-inventory']:AddItem(player, account, amount)
     else
         ESX.GetPlayerFromId(player).setAccountMoney(account, amount, reason)
     end
@@ -183,6 +198,8 @@ end
 BRIDGE.Func.removeAccountMoney = function(player, account, amount, reason)
     if Config.Framework.ESX.inventory == 'ox_inventory' and Config.Framework.ESX.inventoryAccounts[account] then
         OX_INV:RemoveItem(player, account, amount)
+    elseif Config.Framework.ESX.inventory == 'qs-inventory' and Config.Framework.ESX.inventoryAccounts[account] then
+        exports['qs-inventory']:RemoveItem(player, account, amount)
     else
         ESX.GetPlayerFromId(player).removeAccountMoney(account, amount, reason)
     end
@@ -205,6 +222,8 @@ end
 BRIDGE.Func.addInventoryItem = function(player, item, count, metadata, slot, cb)
     if Config.Framework.ESX.inventory == 'ox_inventory' then
         OX_INV:AddItem(player, item, count, metadata, slot, cb)
+    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+        exports['qs-inventory']:AddItem(player, item, count, slot, metadata)
     else
         ESX.GetPlayerFromId(player).addInventoryItem(item, count)
     end
@@ -218,6 +237,8 @@ end
 BRIDGE.Func.removeInventoryItem = function(player, item, count, metadata, slot)
     if Config.Framework.ESX.inventory == 'ox_inventory' then
         OX_INV:RemoveItem(player, item, count, metadata, slot)
+    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+        exports['qs-inventory']:RemoveItem(player, item, count, slot, metadata)
     else
         ESX.GetPlayerFromId(player).removeInventoryItem(item, count)
     end
@@ -231,6 +252,8 @@ end
 BRIDGE.Func.canCarryItem = function(player, item, count, metadata)
     if Config.Framework.ESX.inventory == 'ox_inventory' then
         return OX_INV:CanCarryItem(player, item, count, metadata) or false
+    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+        return exports['qs-inventory']:CanCarryItem(player, item, count)
     end
 
     return ESX.GetPlayerFromId(player).canCarryItem(item, count)
@@ -245,6 +268,9 @@ end
 BRIDGE.Func.canSwapItem = function(player, sourceItem, sourceCount, targetItem, targetCount)
     if Config.Framework.ESX.inventory == 'ox_inventory' then
         return OX_INV:CanSwapItem(player, sourceItem, sourceCount, targetItem, targetCount) or false
+    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+        print('canSwapItem doesnt exist for QS')
+        return false
     end
 
     return ESX.GetPlayerFromId(player).canSwapItem(sourceItem, sourceCount, targetItem, targetCount)
@@ -253,6 +279,8 @@ end
 BRIDGE.Func.getItemCount = function(player, item, metadata, strict)
     if Config.Framework.ESX.inventory == 'ox_inventory' then
         return OX_INV:GetItemCount(player, item, metadata, strict)
+    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+        return exports['qs-inventory']:GetItemTotalAmount(player, item)
     end
 
     return ESX.GetPlayerFromId(player).getInventoryItem(item).count
@@ -266,6 +294,8 @@ end
 BRIDGE.Func.hasItem = function(player, item, metadata, strict)
     if Config.Framework.ESX.inventory == 'ox_inventory' then
         return OX_INV:GetItemCount(player, item, metadata, strict) > 0
+    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+        return exports['qs-inventory']:GetItemTotalAmount(player, item) > 0
     end
 
     return ESX.GetPlayerFromId(player).hasItem(item) == true

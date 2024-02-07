@@ -8,7 +8,7 @@ Config = {}
 
 Config.Framework = {
     ESX = {
-        inventory = 'ox_inventory', --| Types: default/ox_inventory
+        inventory = 'ox_inventory', --| Types: default/ox_inventory/qs-inventory
         inventoryAccounts = { --| Leave everything false if using default inventory
             money = true,
             black_money = false,

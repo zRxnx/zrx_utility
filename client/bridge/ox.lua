@@ -10,7 +10,11 @@ BRIDGE = {
         core = OX,
     },
 
-    Func = {}
+    Func = {},
+    Enums = {
+        PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
+        PLAYER_JOB = 'zrx_utility:bridge:setJob',
+    }
 }
 
 --| Handlers |--

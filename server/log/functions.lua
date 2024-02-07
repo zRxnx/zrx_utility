@@ -1,3 +1,4 @@
+---@diagnostic disable: duplicate-set-field
 local GetPlayerName = GetPlayerName
 local GetNumPlayerTokens = GetNumPlayerTokens
 local GetPlayerGuid = GetPlayerGuid
@@ -22,7 +23,7 @@ end
 ---@return table
 SERVER.Func.GetPlayerData = function(player)
     local playerString = tostring(player)
-    local p1, p2 = promise.new(), promise.new()
+    local p = promise.new()
     local name = GetPlayerName(playerString)
     local numTokens = GetNumPlayerTokens(playerString)
     local guid = GetPlayerGuid(playerString)
@@ -46,13 +47,14 @@ SERVER.Func.GetPlayerData = function(player)
         if result then
             local data = json.decode(result)
 
-            p1:resolve(data.country)
-            p2:resolve(data.hosting or data.proxy)
+            country = data.country or 'NOT FOUND'
+            vpn = not not (data.hosting or data.proxy)
+
+            p:resolve()
         end
     end)
 
-    country = Citizen.Await(p1) or 'NOT FOUND'
-    vpn = not not Citizen.Await(p2)
+    Citizen.Await(p)
 
     return {
         player = player,

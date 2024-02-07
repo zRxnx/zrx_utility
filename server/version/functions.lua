@@ -1,24 +1,27 @@
+---@diagnostic disable: duplicate-set-field
 CreateThread(function()
     SERVER.Func.CheckVersion('zrx_utility')
 end)
 
 ---@param resource string
 SERVER.Func.GetRepoInformations = function(resource)
-    local p1, p2 = promise.new(), promise.new()
+    local p = promise.new()
+    local ver, url
 
     PerformHttpRequest(('https://api.github.com/repos/zRxnx/%s/releases/latest'):format(resource), function(err, response)
         if err == 200 then
             local data = json.decode(response)
 
-            p1:resolve(data.tag_name)
-            p2:resolve(data.html_url)
-        else
-            p1:resolve('INVALID RESPONSE')
-            p2:resolve('INVALID RESPONSE')
+            ver = data.tag_name or 'INVALID RESPONSE'
+            url = data.html_url or 'INVALID RESPONSE'
+
+            p:resolve()
         end
     end, 'GET')
 
-    return Citizen.Await(p1), Citizen.Await(p2)
+    Citizen.Await(p)
+
+    return ver, url
 end
 
 ---@param resource string
