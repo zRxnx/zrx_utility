@@ -32,12 +32,12 @@ end)
 ---@diagnostic disable
 --| Common |--
 ---@return boolean
-BRIDGE.Func.isPlayerDead = function()
+BRIDGE.isPlayerDead = function()
     return Config.DeathCheck()
 end
 
 ---@return boolean
-BRIDGE.Func.isPlayerLoaded = function()
+BRIDGE.isPlayerLoaded = function()
     return LOADED
 end
 
@@ -46,7 +46,7 @@ end
 ---@param type string
 ---@param color number
 ---@param time number
-BRIDGE.Func.notification = function(msg, title, type, color, time)
+BRIDGE.notification = function(msg, title, type, color, time)
     Config.Notification(nil, msg, title, type, color, time)
 end
 
