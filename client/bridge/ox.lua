@@ -1,3 +1,9 @@
+------------------------------------------------
+--                                            --
+--               NOT FINISHED YET             --
+--                                            --
+------------------------------------------------ 
+
 ---@diagnostic disable: duplicate-set-field
 if GetResourceState('ox_core') == 'missing' then return end
 OX = exports.ox_core
@@ -10,11 +16,8 @@ BRIDGE = {
         core = OX,
     },
 
-    Func = {},
-    Enums = {
-        PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
-        PLAYER_JOB = 'zrx_utility:bridge:setJob',
-    }
+    PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
+    PLAYER_JOB = 'zrx_utility:bridge:setJob',
 }
 
 --| Handlers |--
@@ -47,25 +50,7 @@ BRIDGE.Func.notification = function(msg, title, type, color, time)
     Config.Notification(nil, msg, title, type, color, time)
 end
 
----@param id number
-BRIDGE.Func.payBill = function(id)
-    print('payBill doesnt exist for OX')
-end
-
---| Account |--
---@return table
-BRIDGE.Func.getAccount = function(account)
-    print('getAccount doesnt exist for OX')
-end
-
---| Meta |--
---@return table|number|string
-BRIDGE.Func.getMeta = function(meta)
-    print('getMeta doesnt exist for OX')
-end
-
---| Utility |--
---@return table
-BRIDGE.Func.getVariables = function()
-    print('getVariables doesnt exist for OX')
+--| Player Object |--
+BRIDGE.getPlayerObject = function()
+    print('Doesnt exist for OX')
 end

@@ -1,10 +1,10 @@
 ---@diagnostic disable: duplicate-set-field
 CreateThread(function()
-    SERVER.Func.CheckVersion('zrx_utility')
+    SERVER.CheckVersion('zrx_utility')
 end)
 
 ---@param resource string
-SERVER.Func.GetRepoInformations = function(resource)
+SERVER.GetRepoInformations = function(resource)
     local p = promise.new()
     local ver, url
 
@@ -25,8 +25,8 @@ SERVER.Func.GetRepoInformations = function(resource)
 end
 
 ---@param resource string
-SERVER.Func.CheckVersion = function(resource)
-    local repoVersion, repoURL = SERVER.Func.GetRepoInformations(resource)
+SERVER.CheckVersion = function(resource)
+    local repoVersion, repoURL = SERVER.GetRepoInformations(resource)
     local curVersion = GetResourceMetadata(resource, 'version', 0)
 
     if repoVersion == 'INVALID RESPONSE' or repoURL == 'INVALID RESPONSE' then
@@ -40,14 +40,14 @@ SERVER.Func.CheckVersion = function(resource)
         print(('^0[^2INFO^0] %s is up to date! (^2%s^0)'):format(resource, curVersion))
     end
 
-    SERVER.Func.CheckResource(resource)
+    SERVER.CheckResource(resource)
 end
 
 ---@param resource string
-SERVER.Func.CheckResource = function(resource)
+SERVER.CheckResource = function(resource)
     CreateThread(function()
         SetTimeout(1000 * 60 * 60, function()
-            SERVER.Func.CheckVersion(resource)
+            SERVER.CheckVersion(resource)
         end)
     end)
 end

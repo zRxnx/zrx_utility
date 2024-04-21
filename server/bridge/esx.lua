@@ -1,4 +1,4 @@
----@diagnostic disable: duplicate-set-field
+---@diagnostic disable: param-type-mismatch, duplicate-set-field
 if GetResourceState('es_extended') == 'missing' then return end
 ESX = exports.es_extended:getSharedObject()
 OX_INV = exports?.ox_inventory
@@ -10,13 +10,10 @@ BRIDGE = {
         core = ESX,
     },
 
-    Func = {},
-    Enums = {
-        PLAYER_DROPPED = 'zrx_utility:bridge:playerDropped',
-        PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
-        PLAYER_DEATH = 'zrx_utility:bridge:onPlayerDeath',
-        PLAYER_JOB = 'zrx_utility:bridge:setJob',
-    }
+    PLAYER_DROPPED = 'zrx_utility:bridge:playerDropped',
+    PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
+    PLAYER_DEATH = 'zrx_utility:bridge:onPlayerDeath',
+    PLAYER_JOB = 'zrx_utility:bridge:setJob',
 }
 
 --| Handlers |--
@@ -37,20 +34,14 @@ RegisterNetEvent('esx:onPlayerDeath', function(data)
 end)
 
 --| Common |--
----@param player number
----@param weight number
-BRIDGE.Func.setMaxWeight = function(player, weight)
-    ESX.GetPlayerFromId(player).setMaxWeight(weight)
-end
-
 ---@param item string
 ---@param cb function
-BRIDGE.Func.registerUsableItem = function(item, cb)
+BRIDGE.registerUsableItem = function(item, cb)
     ESX.RegisterUsableItem(item, cb)
 end
 
 ---@param player number
-BRIDGE.Func.isPlayerDead = function(player)
+BRIDGE.isPlayerDead = function(player)
     return Config.DeathCheck(player)
 end
 
@@ -60,274 +51,14 @@ end
 ---@param type string
 ---@param color number
 ---@param time number
-BRIDGE.Func.notification = function(player, msg, title, type, color, time)
+BRIDGE.notification = function(player, msg, title, type, color, time)
     Config.Notification(player, msg, title, type, color, time)
 end
 
+
+--| Player Object |--
 ---@param player number
----@return table
-BRIDGE.Func.getBills = function(player)
-    local xPlayer = ESX.GetPlayerFromId(player)
-    local results = MYSQL:query_async('SELECT * FROM `billing` WHERE `identifier` = ?', { xPlayer.identifier })
-    local BILLS = {}
-
-    for k, data in pairs(results) do
-        BILLS[#BILLS + 1] = {
-            id = data.id,
-            label = data.label,
-            amount = data.amount
-        }
-    end
-
-    return BILLS
-end
-
----@param player number
----@return table
-BRIDGE.Func.getLicenses = function(player)
-    local xPlayer = ESX.GetPlayerFromId(player)
-    local results = MYSQL:query_async('SELECT * FROM `user_licenses` WHERE `owner` = ?', { xPlayer.identifier })
-    local LICENSES = {}
-
-    for k, data in pairs(results) do
-        LICENSES[#LICENSES + 1] = {
-            id = data.id,
-            type = data.type,
-        }
-    end
-
-    return LICENSES
-end
-
---| Job |--
----@param player number
----@param job string
----@param grade number
-BRIDGE.Func.setJob = function(player, job, grade)
-    ESX.GetPlayerFromId(player).setJob(job, grade)
-end
-
----@param job string
----@param grade number
----@return boolean
-BRIDGE.Func.doesJobExist = function(job, grade)
-    return ESX.DoesJobExist(job, grade)
-end
-
----@return table
-BRIDGE.Func.getJobs = function()
-    return ESX.GetJobs()
-end
-
---| Society |--
----@param job number
----@return table
-BRIDGE.Func.getSocietyMoney = function(job)
-    local p = promise.new()
-    local money = 0
-
-    TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. job, function(account)
-        money = account.money
-        p:resolve()
-    end)
-
-    Citizen.Await(p)
-
-    return money
-end
-
----@param job number
----@param amount number
-BRIDGE.Func.addSocietyMoney = function(job, amount)
-	TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. job, function(account)
-        account.addMoney(amount)
-	end)
-end
-
----@param job number
----@param amount number
-BRIDGE.Func.setSocietyMoney = function(job, amount)
-	TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. job, function(account)
-        account.setMoney(amount)
-	end)
-end
-
----@param job number
----@param amount number
-BRIDGE.Func.removeSocietyMoney = function(job, amount)
-	TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. job, function(account)
-        account.removeMoney(amount)
-	end)
-end
-
---| Account |--
----@param player number
----@param account string
----@param amount number
----@param reason string
-BRIDGE.Func.addAccountMoney = function(player, account, amount, reason)
-    if Config.Framework.ESX.inventory == 'ox_inventory' and Config.Framework.ESX.inventoryAccounts[account] then
-        OX_INV:AddItem(player, account, amount)
-    elseif Config.Framework.ESX.inventory == 'qs-inventory' and Config.Framework.ESX.inventoryAccounts[account] then
-        exports['qs-inventory']:AddItem(player, account, amount)
-    else
-        ESX.GetPlayerFromId(player).addAccountMoney(account, amount, reason)
-    end
-end
-
----@param player number
----@param account string
----@param amount number
----@param reason string
-BRIDGE.Func.setAccountMoney = function(player, account, amount, reason)
-    if Config.Framework.ESX.inventory == 'ox_inventory' and Config.Framework.ESX.inventoryAccounts[account] then
-        OX_INV:RemoveItem(player, account, OX_INV:GetItemCount(player, account))
-        OX_INV:AddItem(player, account, amount)
-    elseif Config.Framework.ESX.inventory == 'qs-inventory' and Config.Framework.ESX.inventoryAccounts[account] then
-        exports['qs-inventory']:RemoveItem(player, account, exports['qs-inventory']:GetItemTotalAmount(player, account))
-        exports['qs-inventory']:AddItem(player, account, amount)
-    else
-        ESX.GetPlayerFromId(player).setAccountMoney(account, amount, reason)
-    end
-end
-
----@param player number
----@param account string
----@param amount number
----@param reason string
-BRIDGE.Func.removeAccountMoney = function(player, account, amount, reason)
-    if Config.Framework.ESX.inventory == 'ox_inventory' and Config.Framework.ESX.inventoryAccounts[account] then
-        OX_INV:RemoveItem(player, account, amount)
-    elseif Config.Framework.ESX.inventory == 'qs-inventory' and Config.Framework.ESX.inventoryAccounts[account] then
-        exports['qs-inventory']:RemoveItem(player, account, amount)
-    else
-        ESX.GetPlayerFromId(player).removeAccountMoney(account, amount, reason)
-    end
-end
-
----@param player number
----@param account string
----@return table
-BRIDGE.Func.getAccount = function(player, account)
-    return ESX.GetPlayerFromId(player).getAccount(account)
-end
-
---| Inventory |--
----@param player number
----@param item string
----@param count number
----@param metadata table
----@param slot number
----@param cb function
-BRIDGE.Func.addInventoryItem = function(player, item, count, metadata, slot, cb)
-    if Config.Framework.ESX.inventory == 'ox_inventory' then
-        OX_INV:AddItem(player, item, count, metadata, slot, cb)
-    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
-        exports['qs-inventory']:AddItem(player, item, count, slot, metadata)
-    else
-        ESX.GetPlayerFromId(player).addInventoryItem(item, count)
-    end
-end
-
----@param player number
----@param item string
----@param count number
----@param metadata table
----@param slot number
-BRIDGE.Func.removeInventoryItem = function(player, item, count, metadata, slot)
-    if Config.Framework.ESX.inventory == 'ox_inventory' then
-        OX_INV:RemoveItem(player, item, count, metadata, slot)
-    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
-        exports['qs-inventory']:RemoveItem(player, item, count, slot, metadata)
-    else
-        ESX.GetPlayerFromId(player).removeInventoryItem(item, count)
-    end
-end
-
----@param player number
----@param item string
----@param count number
----@param metadata table
----@return boolean
-BRIDGE.Func.canCarryItem = function(player, item, count, metadata)
-    if Config.Framework.ESX.inventory == 'ox_inventory' then
-        return OX_INV:CanCarryItem(player, item, count, metadata) or false
-    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
-        return exports['qs-inventory']:CanCarryItem(player, item, count)
-    end
-
-    return ESX.GetPlayerFromId(player).canCarryItem(item, count)
-end
-
----@param player number
----@param sourceItem string
----@param sourceCount number
----@param targetItem string
----@param targetCount number
----@return boolean
-BRIDGE.Func.canSwapItem = function(player, sourceItem, sourceCount, targetItem, targetCount)
-    if Config.Framework.ESX.inventory == 'ox_inventory' then
-        return OX_INV:CanSwapItem(player, sourceItem, sourceCount, targetItem, targetCount) or false
-    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
-        print('canSwapItem doesnt exist for QS')
-        return false
-    end
-
-    return ESX.GetPlayerFromId(player).canSwapItem(sourceItem, sourceCount, targetItem, targetCount)
-end
-
-BRIDGE.Func.getItemCount = function(player, item, metadata, strict)
-    if Config.Framework.ESX.inventory == 'ox_inventory' then
-        return OX_INV:GetItemCount(player, item, metadata, strict)
-    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
-        return exports['qs-inventory']:GetItemTotalAmount(player, item)
-    end
-
-    return ESX.GetPlayerFromId(player).getInventoryItem(item).count
-end
-
----@param player number
----@param item string
----@param metadata table
----@param strict boolean
----@return boolean
-BRIDGE.Func.hasItem = function(player, item, metadata, strict)
-    if Config.Framework.ESX.inventory == 'ox_inventory' then
-        return OX_INV:GetItemCount(player, item, metadata, strict) > 0
-    elseif Config.Framework.ESX.inventory == 'qs-inventory' then
-        return exports['qs-inventory']:GetItemTotalAmount(player, item) > 0
-    end
-
-    return ESX.GetPlayerFromId(player).hasItem(item) == true
-end
-
---| Meta |--
----@param player number
----@param meta string
-BRIDGE.Func.clearMeta = function(player, meta)
-    ESX.GetPlayerFromId(player).clearMeta(meta)
-end
-
----@param player number
----@param meta string
----@param index string
----@return table|number|string
-BRIDGE.Func.getMeta = function(player, meta, index)
-    return ESX.GetPlayerFromId(player).getMeta(meta, index)
-end
-
----@param player number
----@param meta string
----@param index string
----@param subIndex string
-BRIDGE.Func.setMeta = function(player, meta, index, subIndex)
-    ESX.GetPlayerFromId(player).setMeta(meta, index, subIndex)
-end
-
---| Utility |--
----@param player number
----@return table
-BRIDGE.Func.getVariables = function(player)
+BRIDGE.getPlayerObject = function(player)
     local xPlayer = ESX.GetPlayerFromId(player)
     local var, job = xPlayer.variables, xPlayer.job
     local status = {}
@@ -338,7 +69,7 @@ BRIDGE.Func.getVariables = function(player)
         loadout = xPlayer.loadout
     elseif Config.Framework.ESX.inventory == 'ox_inventory' then
         inventory = OX_INV:GetInventoryItems(player) or {}
-        loadout = {}
+        loadout = inventory
     end
 
     if var?.status then
@@ -351,34 +82,344 @@ BRIDGE.Func.getVariables = function(player)
         end
     end
 
-    return {
-        player = player,
-        identifier = xPlayer.identifier,
-        group = xPlayer.group,
+    local self = {}
+    self.source = player
+    self.player = player
+    self.identifier = xPlayer.identifier
+    self.group = xPlayer.group
 
-        maxWeight = xPlayer.maxWeight,
-        curWeight = xPlayer.weight,
+    self.maxWeight = xPlayer.maxWeight
+    self.curWeight = xPlayer.weight
+    self.inventory = inventory
+    self.loadout = loadout
 
-        name = var.firstName .. ' ' .. var.lastName,
-        firstname = var.firstName,
-        lastname = var.lastName,
-        sex = var.sex,
-        height = var.height,
-        dob = var.dateofbirth,
+    self.name = var.firstName .. ' ' .. var.lastName
+    self.firstName = var.firstName
+    self.lastName = var.lastName
+    self.sex = var.sex
+    self.height = var.height
+    self.dob = var.dateofbirth
+    self.status = status
 
-        job = {
-            name = job.name,
-            label = job.label,
-            grade = job.grade,
-            grade_name = job.grade_name,
-            grade_label = job.grade_label,
-            grade_salary = job.grade_salary,
-        },
+    self.accounts = xPlayer.accounts
+    self.addonAccounts = var.addonAccounts
 
-        status = status,
-        inventory = inventory,
-        loadout = loadout,
-        accounts = xPlayer.accounts,
-        addonAccounts = var.addonAccounts,
+    self.job = {
+        name = job.name,
+        label = job.label,
+        grade = job.grade,
+        grade_name = job.grade_name,
+        grade_label = job.grade_label,
+        grade_salary = job.grade_salary,
     }
+
+    self.setMaxWeight = function(value)
+        if type(value) ~= 'number' then
+            return 'failed', 'Invalid data passed'
+        end
+
+        xPlayer.setMaxWeight(value)
+
+        return 'success'
+    end
+
+    self.getLicenses = function()
+        local results = MYSQL:query_async('SELECT * FROM `user_licenses` WHERE `owner` = ?', { self.identifier })
+        local LICENSES = {}
+
+        for k, data in pairs(results) do
+            LICENSES[#LICENSES + 1] = {
+                id = data.id,
+                type = data.type,
+            }
+        end
+
+        if #LICENSES > 0 then
+            return LICENSES
+        else
+            return 'fail', 'No data saved'
+        end
+    end
+
+    self.getBills = function()
+        local results = MYSQL:query_async('SELECT * FROM `billing` WHERE `identifier` = ?', { self.identifier })
+        local BILLS = {}
+
+        for k, data in pairs(results) do
+            BILLS[#BILLS + 1] = {
+                id = data.id,
+                label = data.label,
+                amount = data.amount
+            }
+        end
+
+        if #BILLS > 0 then
+            return BILLS
+        else
+            return 'fail', 'No data saved'
+        end
+    end
+
+    self.setJob = function(job, grade)
+        if not job or not grade then
+            return 'fail', 'Invalid data passed'
+        end
+
+        xPlayer.setJob(job, grade)
+
+        return 'success'
+    end
+
+    self.addAccountMoney = function(account, amount, reason)
+        if not account or not amount or not reason then
+            return 'fail', 'Invalid data passed'
+        end
+
+        if Config.Framework.ESX.inventory == 'ox_inventory' and Config.Framework.ESX.inventoryAccounts[account] then
+            OX_INV:AddItem(self.player, account, amount)
+        elseif Config.Framework.ESX.inventory == 'qs-inventory' and Config.Framework.ESX.inventoryAccounts[account] then
+            exports['qs-inventory']:AddItem(self.player, account, amount)
+        else
+            xPlayer.addAccountMoney(account, amount, reason)
+        end
+
+        return 'success'
+    end
+
+    self.setAccountMoney = function(account, amount, reason)
+        if not account or not amount or not reason then
+            return 'fail', 'Invalid data passed'
+        end
+
+        if Config.Framework.ESX.inventory == 'ox_inventory' and Config.Framework.ESX.inventoryAccounts[account] then
+            OX_INV:RemoveItem(self.player, account, OX_INV:GetItemCount(self.player, account))
+            OX_INV:AddItem(self.player, account, amount)
+        elseif Config.Framework.ESX.inventory == 'qs-inventory' and Config.Framework.ESX.inventoryAccounts[account] then
+            exports['qs-inventory']:RemoveItem(self.player, account, exports['qs-inventory']:GetItemTotalAmount(self.player, account))
+            exports['qs-inventory']:AddItem(self.player, account, amount)
+        else
+            xPlayer.setAccountMoney(account, amount, reason)
+        end
+
+        return 'success'
+    end
+
+    self.removeAccountMoney = function(account, amount, reason)
+        if not account or not amount or not reason then
+            return 'fail', 'Invalid data passed'
+        end
+
+        if Config.Framework.ESX.inventory == 'ox_inventory' and Config.Framework.ESX.inventoryAccounts[account] then
+            OX_INV:RemoveItem(self.player, account, amount)
+        elseif Config.Framework.ESX.inventory == 'qs-inventory' and Config.Framework.ESX.inventoryAccounts[account] then
+            exports['qs-inventory']:RemoveItem(self.player, account, amount)
+        else
+            xPlayer.removeAccountMoney(account, amount, reason)
+        end
+
+        return 'success'
+    end
+
+    self.getAccount = function(account)
+        if not account then
+            return 'fail', 'Invalid data passed'
+        end
+
+        return xPlayer.getAccount(account)
+    end
+
+    self.addInventoryItem = function(item, count, metadata, slot, cb)
+        if not item or not count then
+            return 'fail', 'Invalid data passed'
+        end
+
+        if Config.Framework.ESX.inventory == 'ox_inventory' then
+            OX_INV:AddItem(self.player, item, count, metadata, slot, cb)
+        elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+            exports['qs-inventory']:AddItem(self.player, item, count, slot, metadata)
+        else
+            xPlayer.addInventoryItem(item, count)
+        end
+
+        return 'success'
+    end
+
+    self.removeInventoryItem = function(item, count, metadata, slot, cb)
+        if not item or not count then
+            return 'fail', 'Invalid data passed'
+        end
+
+        if Config.Framework.ESX.inventory == 'ox_inventory' then
+            OX_INV:RemoveItem(self.player, item, count, metadata, slot)
+        elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+            exports['qs-inventory']:RemoveItem(self.player, item, count, slot, metadata)
+        else
+            xPlayer.removeInventoryItem(item, count)
+        end
+
+        return 'success'
+    end
+
+    self.canCarryItem = function(item, count, metadata)
+        if not item or not count then
+            return 'fail', 'Invalid data passed'
+        end
+
+        if Config.Framework.ESX.inventory == 'ox_inventory' then
+            return OX_INV:CanCarryItem(self.player, item, count, metadata) or false
+        elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+            return exports['qs-inventory']:CanCarryItem(self.player, item, count)
+        end
+
+        return xPlayer.canCarryItem(item, count)
+    end
+
+    self.canSwapItem = function(sourceItem, sourceCount, targetItem, targetCount)
+        if not sourceItem or not sourceCount or not targetItem or not targetCount then
+            return 'fail', 'Invalid data passed'
+        end
+
+        if Config.Framework.ESX.inventory == 'ox_inventory' then
+            return OX_INV:CanSwapItem(self.player, sourceItem, sourceCount, targetItem, targetCount) or false
+        elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+            print('canSwapItem doesnt exist for QS')
+            return false
+        end
+
+        return xPlayer.canSwapItem(sourceItem, sourceCount, targetItem, targetCount)
+    end
+
+    self.getItemCount = function(item, metadata, strict)
+        if not item then
+            return 'fail', 'Invalid data passed'
+        end
+
+        if Config.Framework.ESX.inventory == 'ox_inventory' then
+            return OX_INV:GetItemCount(self.player, item, metadata, strict)
+        elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+            return exports['qs-inventory']:GetItemTotalAmount(self.player, item)
+        end
+
+        return xPlayer.getInventoryItem(item).count
+    end
+
+    self.hasItem = function(item, metadata, strict)
+        if not item then
+            return 'fail', 'Invalid data passed'
+        end
+
+        if Config.Framework.ESX.inventory == 'ox_inventory' then
+            return OX_INV:GetItemCount(self.player, item, metadata, strict) > 0
+        elseif Config.Framework.ESX.inventory == 'qs-inventory' then
+            return exports['qs-inventory']:GetItemTotalAmount(self.player, item) > 0
+        end
+
+        return xPlayer.hasItem(item) == true
+    end
+
+    self.clearMeta = function(meta)
+        if not meta then
+            return 'fail', 'Invalid data passed'
+        end
+
+        xPlayer.clearMeta(meta)
+
+        return 'success'
+    end
+
+    self.getMeta = function(meta, index)
+        if not meta then
+            return 'fail', 'Invalid data passed'
+        end
+
+        return xPlayer.getMeta(meta, index)
+    end
+
+    self.setMeta = function(meta, index, subIndex)
+        if not meta then
+            return 'fail', 'Invalid data passed'
+        end
+
+        xPlayer.setMeta(meta, index, subIndex)
+
+        return 'success'
+    end
+
+    return self
+end
+
+--| Society Object |--
+BRIDGE.getSocietyObject = function(job)
+    local self = {}
+    self.job = job
+    self.money = self.getSocietyMoney()
+
+    self.getSocietyMoney = function()
+        local p = promise.new()
+        local money = 0
+
+        TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. self.job, function(account)
+            money = account.money
+            p:resolve()
+        end)
+
+        Citizen.Await(p)
+
+        return money
+    end
+
+    self.addSocietyMoney = function(amount)
+        if not amount then
+            return 'fail', 'Invalid data passed'
+        end
+
+        TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. self.job, function(account)
+            account.addMoney(amount)
+        end)
+
+        return 'success'
+    end
+
+    self.setSocietyMoney = function(amount)
+        if not amount then
+            return 'fail', 'Invalid data passed'
+        end
+
+        TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. self.job, function(account)
+            account.setMoney(amount)
+        end)
+
+        return 'success'
+    end
+
+    self.removeSocietyMoney = function(amount)
+        if not amount then
+            return 'fail', 'Invalid data passed'
+        end
+
+        TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. self.job, function(account)
+            account.removeMoney(amount)
+        end)
+
+        return 'success'
+    end
+
+    return self
+end
+
+--| Job Object |--
+BRIDGE.getJobObject = function(job, grade)
+    local self = {}
+    self.job = job
+    self.grade = grade
+
+    self.doesJobExist = function()
+        return ESX.DoesJobExist(self.job, self.grade)
+    end
+
+    self.getJobs = function()
+        return ESX.GetJobs()
+    end
+
+    return self
 end

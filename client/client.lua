@@ -1,12 +1,10 @@
-CLIENT = {
-    Func = {}
-}
+CLIENT = {}
 
 exports('GetUtility', function()
     return {
-        Client = CLIENT.Func,
-        Shared = SHARED.Func,
-        Bridge = BRIDGE.Func,
+        Client = CLIENT,
+        Shared = SHARED,
+        Bridge = BRIDGE,
         Framework = BRIDGE.Framework,
     }
 end)

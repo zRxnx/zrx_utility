@@ -1,3 +1,9 @@
+------------------------------------------------
+--                                            --
+--               NOT FINISHED YET             --
+--                                            --
+------------------------------------------------ 
+
 ---@diagnostic disable: duplicate-set-field
 if GetResourceState('qbx_core') == 'missing' then return end
 QBX = exports.qbx_core
@@ -9,11 +15,8 @@ BRIDGE = {
         core = QBX,
     },
 
-    Func = {},
-    Enums = {
-        PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
-        PLAYER_JOB = 'zrx_utility:bridge:setJob',
-    }
+    PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
+    PLAYER_JOB = 'zrx_utility:bridge:setJob',
 }
 
 --| Handlers |--
@@ -47,77 +50,70 @@ BRIDGE.Func.notification = function(msg, title, type, color, time)
     Config.Notification(nil, msg, title, type, color, time)
 end
 
---| Account |--
----@return table
-BRIDGE.Func.getAccount = function(account)
-    for k, data in pairs(QBX:PlayerData().money) do
-        if data.name == account then
-            return {
-                name = data.type,
-                label = data.type,
-                money = data.amount,
-                round = true,
-            }
-        end
-    end
-
-    return {}
-end
-
----@param id number
-BRIDGE.Func.payBill = function(id)
-    print('payBill doesnt exist for qbx')
-end
-
---| Meta |--
----@return table|number|string
-BRIDGE.Func.getMeta = function(meta)
-    return QBX:GetPlayerData().metadata[meta]
-end
-
---| Utility |--
----@return table
-BRIDGE.Func.getVariables = function()
+--| Player Object |--
+BRIDGE.getPlayerObject = function()
     local xPlayer = QBX:GetPlayerData()
     local var, job, md = xPlayer.playerData.charinfo, xPlayer.playerData.job, xPlayer.playerData.metadata
+    local self = {}
 
-    return {
-        player = player,
-        identifier = var.license,
-        group = var.permission,
+    self.identifier = var.license
+    self.group = var.permission
 
-        maxWeight = OX_INV:GetPlayerMaxWeight(),
-        curWeight = OX_INV:GetPlayerWeight(),
+    self.maxWeight = OX_INV:GetPlayerMaxWeight()
+    self.curWeight = OX_INV:GetPlayerWeight()
+    self.accounts = xPlayer.money
+    self.inventory = OX_INV:GetPlayerItems()
+    self.loadout = {}
 
-        name = var.firstname .. ' ' .. var.lastname,
-        firstname = var.firstname,
-        lastname = var.lastname,
-        sex = var.gender == 0 and 'm' or 'f',
-        height = 0,
-        dob = var.birthdate,
+    self.name = var.firstname .. ' ' .. var.lastname
+    self.firstName = var.firstname
+    self.lastName = var.lastname
+    self.sex = var.gender == 0 and 'm' or 'f'
+    self.height = 0
+    self.dob = var.birthdate
 
-        job = {
-            name = job.name,
-            label = job.label,
-            grade = job.grade.level,
-            grade_name = job.grade.name,
-            grade_salary = job.grade.payment,
-        },
-
-        status = {
-            hunger = {
-                name = 'hunger',
-                percent = md.hunger
-            },
-
-            thirst = {
-                name = 'thirst',
-                percent = md.thirst
-            },
-        },
-
-        inventory = OX_INV:GetPlayerItems(),
-        loadout = {},
-        accounts = var.money,
+    self.job = {
+        name = job.name,
+        label = job.label,
+        grade = job.grade,
+        grade_name = job.grade_name,
+        grade_salary = job.grade_salary,
     }
+
+    self.status = {
+        hunger = {
+            name = 'hunger',
+            percent = md.hunger
+        },
+
+        thirst = {
+            name = 'thirst',
+            percent = md.thirst
+        },
+    }
+
+    self.payBill = function(id)
+        print('payBill doesnt exist for qbx')
+    end
+
+    self.getAccount = function(account)
+        for k, data in pairs(self.accounts) do
+            if data.name == account then
+                return {
+                    name = data.type,
+                    label = data.type,
+                    money = data.amount,
+                    round = true,
+                }
+            end
+        end
+    
+        return {}
+    end
+
+    self.getMeta = function(meta)
+        return md[meta]
+    end
+
+    return self
 end

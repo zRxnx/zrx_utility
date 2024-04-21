@@ -13,15 +13,15 @@ local GetPlayerEndpoint = GetPlayerEndpoint
 
 ---@param player number
 ---@return table
-SERVER.Func.GetPlayerCache = function(player)
-    PLAYER_CACHE[player] = SERVER.Func.GetPlayerData(player)
+SERVER.GetPlayerCache = function(player)
+    PLAYER_CACHE[player] = SERVER.GetPlayerData(player)
 
     return PLAYER_CACHE[player]
 end
 
 ---@param player number
 ---@return table
-SERVER.Func.GetPlayerData = function(player)
+SERVER.GetPlayerData = function(player)
     local playerString = tostring(player)
     local p = promise.new()
     local name = GetPlayerName(playerString)
@@ -79,7 +79,7 @@ end
 ---@param message string
 ---@param webhook string
 ---@return nil
-SERVER.Func.DiscordLog = function(player, title, message, webhook)
+SERVER.DiscordLog = function(player, title, message, webhook)
     if webhook:len() <= 0 then return end
     local description = ('%s\n\n~~---------------------------------------------------------------------~~'):format(message)
     local fields = {}

@@ -8,11 +8,8 @@ BRIDGE = {
         core = ESX,
     },
 
-    Func = {},
-    Enums = {
-        PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
-        PLAYER_JOB = 'zrx_utility:bridge:setJob',
-    }
+    PLAYER_LOADED = 'zrx_utility:bridge:playerLoaded',
+    PLAYER_JOB = 'zrx_utility:bridge:setJob',
 }
 
 --| Handlers |--
@@ -44,67 +41,60 @@ BRIDGE.Func.notification = function(msg, title, type, color, time)
     Config.Notification(nil, msg, title, type, color, time)
 end
 
----@param id number
-BRIDGE.Func.payBill = function(id)
-    ESX.TriggerServerCallback('esx_billing:payBill', function()
-    end, id)
-end
-
-
---| Account |--
----@return table
-BRIDGE.Func.getAccount = function(account)
-    for k, data in pairs(ESX.PlayerData().accounts) do
-        if data.name == account then
-            return {
-                name = data.name,
-                label = data.label,
-                money = data.money,
-                round = data.round,
-            }
-        end
-    end
-
-    return {}
-end
-
---| Meta |--
----@return table|string|number
-BRIDGE.Func.getMeta = function(meta)
-    return ESX.GetPlayerData().metadata[meta]
-end
-
---| Utility |--
----@return table
-BRIDGE.Func.getVariables = function()
+--| Player Object |--
+BRIDGE.getPlayerObject = function()
     local xPlayer = ESX.GetPlayerData()
     local job = xPlayer.job
+    local self = {}
 
-    return {
-        identifier = xPlayer.identifier,
-        group = xPlayer.group,
+    self.identifier = xPlayer.identifier
+    self.group = xPlayer.group
 
-        maxWeight = xPlayer.maxWeight,
-        curWeight = xPlayer.weight,
+    self.maxWeight = xPlayer.maxWeight
+    self.curWeight = xPlayer.weight
+    self.inventory = xPlayer.inventory
+    self.loadout = xPlayer.loadout
+    self.accounts = xPlayer.accounts
 
-        name = xPlayer.firstName .. ' ' .. xPlayer.lastName,
-        firstname = xPlayer.firstName,
-        lastname = xPlayer.lastName,
-        sex = xPlayer.sex,
-        height = xPlayer.height,
-        dob = xPlayer.dateofbirth,
+    self.name = xPlayer.firstName .. ' ' .. xPlayer.lastName
+    self.firstName = xPlayer.firstName
+    self.lastName = xPlayer.lastName
+    self.sex = xPlayer.sex
+    self.height = xPlayer.height
+    self.dob = xPlayer.dateofbirth
 
-        job = {
-            name = job.name,
-            label = job.label,
-            grade = job.grade,
-            grade_name = job.grade_name,
-            grade_label = job.grade_label,
-            grade_salary = job.grade_salary,
-        },
-
-        inventory = xPlayer.inventory,
-        loadout = xPlayer.loadout,
-        accounts = xPlayer.accounts,
+    self.job = {
+        name = job.name,
+        label = job.label,
+        grade = job.grade,
+        grade_name = job.grade_name,
+        grade_label = job.grade_label,
+        grade_salary = job.grade_salary,
     }
+
+    self.payBill = function(id)
+        ESX.TriggerServerCallback('esx_billing:payBill', function()
+        end, id)
+    end
+
+    self.getAccount = function(account)
+        for k, data in pairs(self.accounts) do
+            if data.name == account then
+                return {
+                    name = data.name,
+                    label = data.label,
+                    money = data.money,
+                    round = data.round,
+                }
+            end
+        end
+
+        return {}
+    end
+
+    self.getMeta = function(meta)
+        return ESX.GetPlayerData().metadata[meta]
+    end
+
+    return self
 end

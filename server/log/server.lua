@@ -1,7 +1,7 @@
 RegisterNetEvent('zrx_utility:bridge:playerLoaded', function(player)
     if not GetInvokingResource() then return end
 
-    PLAYER_CACHE[player] = SERVER.Func.GetPlayerData(player)
+    PLAYER_CACHE[player] = SERVER.GetPlayerData(player)
     PLAYERS[player] = true
 end)
 
@@ -15,7 +15,7 @@ end)
 CreateThread(function()
     for i, player in pairs(GetPlayers()) do
         player = tonumber(player)
-        PLAYER_CACHE[player] = SERVER.Func.GetPlayerData(player)
+        PLAYER_CACHE[player] = SERVER.GetPlayerData(player)
         PLAYERS[player] = true
     end
 end)

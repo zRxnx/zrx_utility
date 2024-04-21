@@ -1,13 +1,11 @@
 PLAYER_CACHE, PLAYERS = {}, {}
-SERVER = {
-    Func = {}
-}
+SERVER = {}
 
 exports('GetUtility', function()
     return {
-        Server = SERVER.Func,
-        Shared = SHARED.Func,
-        Bridge = BRIDGE.Func,
+        Server = SERVER,
+        Shared = SHARED,
+        Bridge = BRIDGE,
         Framework = BRIDGE.Framework,
     }
 end)

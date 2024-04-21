@@ -4,7 +4,7 @@ local IsPauseMenuActive = IsPauseMenuActive
 ---@param options table
 ---@param useContext boolean
 ---@param position string
-CLIENT.Func.CreateMenu = function(menu, options, useContext, position)
+CLIENT.CreateMenu = function(menu, options, useContext, position)
     if useContext then
         exports.ox_lib:registerContext({
             id = menu.id,

@@ -5,7 +5,7 @@ use_experimental_fxv2_oal 'yes'
 
 author 'zRxnx'
 description 'Utility library for my resources'
-version '1.2.0'
+version '2.0.0'
 
 shared_scripts {
     'configuration/config.lua',
