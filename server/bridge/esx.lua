@@ -352,7 +352,6 @@ end
 BRIDGE.getSocietyObject = function(job)
     local self = {}
     self.job = job
-    self.money = self.getSocietyMoney()
 
     self.getSocietyMoney = function()
         local p = promise.new()
