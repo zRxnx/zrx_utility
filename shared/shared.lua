@@ -108,3 +108,23 @@ end
 SHARED.StartsWith = function(string, find)
     return string:sub(1, #find) == find
 end
+
+---@param value string
+---@return string, number
+SHARED.Trim = function(value)
+    return value:gsub('^%s*(.-)%s*$', '%1')
+end
+
+---@param table table
+---@return boolean
+SHARED.IsTableEmpty = function(table)
+    if not table then
+        return true
+    end
+
+    for _ in pairs(table) do
+        return false
+    end
+
+    return true
+end

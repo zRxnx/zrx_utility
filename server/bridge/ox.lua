@@ -178,3 +178,14 @@ BRIDGE.getJobObject = function(job, grade)
 
     return self
 end
+
+--| Vehicle Object |--
+BRIDGE.getVehicleObject = function()
+    local self = {}
+
+    self.getAllVehicles = function()
+        print('getAllVehicles doesnt exist for OX')
+    end
+
+    return self
+end

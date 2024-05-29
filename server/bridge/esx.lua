@@ -422,3 +422,14 @@ BRIDGE.getJobObject = function(job, grade)
 
     return self
 end
+
+--| Vehicle Object |--
+BRIDGE.getVehicleObject = function()
+    local self = {}
+
+    self.getAllVehicles = function()
+        return MYSQL:query_async('SELECT `owner`, `plate` FROM `owned_vehicles`', {})
+    end
+
+    return self
+end

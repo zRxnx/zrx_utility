@@ -5,7 +5,10 @@ use_experimental_fxv2_oal 'yes'
 
 author 'zRxnx'
 description 'Utility library for my resources'
-version '2.0.2'
+version '2.1.0'
+
+docs 'https://docs.zrxnx.at'
+discord 'https://discord.gg/mcN25FJ33K'
 
 shared_scripts {
     'configuration/config.lua',

@@ -317,3 +317,14 @@ BRIDGE.getJobObject = function(job, grade)
 
     return self
 end
+
+--| Vehicle Object |--
+BRIDGE.getVehicleObject = function()
+    local self = {}
+
+    self.getAllVehicles = function()
+        print('getAllVehicles doesnt exist for QBOX')
+    end
+
+    return self
+end
