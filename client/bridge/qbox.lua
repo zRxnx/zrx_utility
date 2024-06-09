@@ -1,9 +1,3 @@
-------------------------------------------------
---                                            --
---               NOT FINISHED YET             --
---                                            --
------------------------------------------------- 
-
 ---@diagnostic disable: duplicate-set-field
 if GetResourceState('qbx_core') == 'missing' then return end
 QBX = exports.qbx_core

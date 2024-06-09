@@ -1,9 +1,3 @@
-------------------------------------------------
---                                            --
---               NOT FINISHED YET             --
---                                            --
------------------------------------------------- 
-
 ---@diagnostic disable: param-type-mismatch, duplicate-set-field
 if GetResourceState('qbx_core') == 'missing' then return end
 QBX = exports.qbx_core
@@ -322,8 +316,18 @@ end
 BRIDGE.getVehicleObject = function()
     local self = {}
 
-    self.getAllVehicles = function()
-        print('getAllVehicles doesnt exist for QBOX')
+    self.getAllVehicles = function() --owner plate
+        local response = MYSQL:query_async('SELECT `license`, `plate` FROM `player_vehicles`', {})
+        local DATA = {}
+
+        for k, data in pairs(response) do
+            DATA[#DATA + 1] = {
+                owner = data.license,
+                plate = data.plate
+            }
+        end
+
+        return DATA
     end
 
     return self

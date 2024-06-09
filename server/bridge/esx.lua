@@ -431,5 +431,29 @@ BRIDGE.getVehicleObject = function()
         return MYSQL:query_async('SELECT `owner`, `plate` FROM `owned_vehicles`', {})
     end
 
+    self.spawnVehicle = function(model, coords, plate)
+        local vehicleNet
+        local p = promise.new()
+
+        ESX.OneSync.SpawnVehicle(model, vector3(coords.x, coords.y, coords.z), coords[4], {}, function(netId)
+            vehicleNet = netId
+            p:resolve()
+        end)
+
+        Citizen.Await(p)
+
+        if not vehicleNet then
+            return print('Failed to create vehicle')
+        end
+
+        local vehicle = NetworkGetEntityFromNetworkId(vehicleNet)
+
+        if plate then
+            SetVehicleNumberPlateText(vehicle, plate)
+        end
+
+        return vehicleNet, vehicle
+    end
+
     return self
 end
