@@ -1,12 +1,11 @@
 ---@diagnostic disable: param-type-mismatch, duplicate-set-field
-if GetResourceState('qbx_core') == 'missing' then return end
-QBX = exports.qbx_core
-OX_INV = exports.ox_inventory
+if GetResourceState('qb-core') == 'missing' then return end
+QB = exports['qb-core']:GetCoreObject()
 BRIDGE = {
     Framework = {
-        type = 'qbx',
-        version = GetResourceMetadata('qbx_core', 'version', 0),
-        core = QBX,
+        type = 'qb',
+        version = GetResourceMetadata('qb-core', 'version', 0),
+        core = QB,
     },
 
     PLAYER_DROPPED = 'zrx_utility:bridge:playerDropped',
@@ -36,7 +35,7 @@ end)
 ---@param item string
 ---@param cb function
 BRIDGE.registerUsableItem = function(item, cb)
-    QBX:CreateUseableItem(item, cb)
+    QB.Functions.CreateUseableItem(item, cb)
 end
 
 ---@param player number
@@ -58,26 +57,25 @@ end
 --| Player Object |--
 ---@param player number
 BRIDGE.getPlayerObject = function(player)
-    local xPlayer = QBX:GetPlayer(player)
-    local var, job2, md = xPlayer.playerData.charinfo, xPlayer.playerData.job, xPlayer.playerData.metadata
-    local INV = OX_INV:GetInventory(player)
+    local xPlayer = QB.Functions.GetPlayer(player)
+    local var, job2, md = xPlayer.PlayerData.charinfo, xPlayer.PlayerData.job, xPlayer.PlayerData.metadata
 
     local self = {}
     self.source = player
     self.player = player
-    self.identifier = var.license
-    self.group = QBX:GetPermission(player)
+    self.identifier = xPlayer.PlayerData.citizenid
+    self.group = xPlayer.Functions.GetPermission()
 
-    self.maxWeight = INV?.maxWeight
-    self.curWeight = INV?.weight
-    self.inventory = OX_INV:GetInventoryItems(player)
+    --self.maxWeight = 
+    self.curWeight = xPlayer.PlayerData.GetTotalWeight
+    self.inventory = xPlayer.PlayerData.LoadInventory
     self.loadout = self.inventory
 
     self.name = var.firstname .. ' ' .. var.lastname
     self.firstname = var.firstname
     self.lastname = var.lastname
     self.sex = var.gender
-    self.height = 0
+    self.height = var?.height
     self.dob = var.birthdate
 
     self.accounts = var.money
@@ -93,12 +91,12 @@ BRIDGE.getPlayerObject = function(player)
     self.status = {
         hunger = {
             name = 'hunger',
-            percent = md.hunger
+            percent = md?.hunger
         },
 
         thirst = {
             name = 'thirst',
-            percent = md.thirst
+            percent = md?.thirst
         },
     }
 
@@ -107,17 +105,17 @@ BRIDGE.getPlayerObject = function(player)
             return 'failed', 'Invalid data passed'
         end
 
-        OX_INV:SetMaxWeight(player, value)
+        print('setMaxWeight doesnt exist for QB')
 
         return 'success'
     end
 
     self.getLicenses = function()
-        print('getLicenses doesnt exist for QBOX')
+        return md.licenses
     end
 
     self.getBills = function()
-        print('getBills doesnt exist for QBOX')
+        print('getBills doesnt exist for QB')
     end
 
     self.setJob = function(job, grade)
@@ -135,7 +133,7 @@ BRIDGE.getPlayerObject = function(player)
             return 'fail', 'Invalid data passed'
         end
 
-        xPlayer.Functions.AddMoney(account, amount, reason)
+        xPlayer.Functions.AddMoney(account, amount)
 
         return 'success'
     end
@@ -145,7 +143,7 @@ BRIDGE.getPlayerObject = function(player)
             return 'fail', 'Invalid data passed'
         end
 
-        xPlayer.Functions.SetMoney(account, amount, reason)
+        xPlayer.Functions.SetMoney(account, amount)
 
         return 'success'
     end
@@ -155,7 +153,7 @@ BRIDGE.getPlayerObject = function(player)
             return 'fail', 'Invalid data passed'
         end
 
-        xPlayer.Functions.RemoveMoney(account, amount, reason)
+        xPlayer.Functions.RemoveMoney(account, amount)
 
         return 'success'
     end
@@ -173,7 +171,7 @@ BRIDGE.getPlayerObject = function(player)
             return 'fail', 'Invalid data passed'
         end
 
-        OX_INV:AddItem(player, item, count, metadata, slot, cb)
+        xPlayer.Functions.AddItem(item, count, slot, metadata)
 
         return 'success'
     end
@@ -183,7 +181,7 @@ BRIDGE.getPlayerObject = function(player)
             return 'fail', 'Invalid data passed'
         end
 
-        OX_INV:RemoveItem(player, item, count, metadata, slot)
+        xPlayer.Functions.RemoveItem(item, count, slot, metadata)
 
         return 'success'
     end
@@ -193,7 +191,9 @@ BRIDGE.getPlayerObject = function(player)
             return 'fail', 'Invalid data passed'
         end
 
-        return OX_INV:CanCarryItem(player, item, count, metadata) or false
+        print('canCarryItem doesnt exist for QB')
+
+        return true
     end
 
     self.canSwapItem = function(sourceItem, sourceCount, targetItem, targetCount)
@@ -201,7 +201,9 @@ BRIDGE.getPlayerObject = function(player)
             return 'fail', 'Invalid data passed'
         end
 
-        return OX_INV:CanSwapItem(player, sourceItem, sourceCount, targetItem, targetCount) or false
+        print('canSwapItem doesnt exist for QB')
+
+        return true
     end
 
     self.getItemCount = function(item, metadata, strict)
@@ -209,7 +211,9 @@ BRIDGE.getPlayerObject = function(player)
             return 'fail', 'Invalid data passed'
         end
 
-        return OX_INV:GetItemCount(player, item, metadata, strict)
+        local output = xPlayer.Functions.GetItemByName(item)
+
+        return output.count or output.amount or 0
     end
 
     self.hasItem = function(item, metadata, strict)
@@ -217,7 +221,9 @@ BRIDGE.getPlayerObject = function(player)
             return 'fail', 'Invalid data passed'
         end
 
-        return OX_INV:GetItemCount(player, item, metadata, strict) > 0
+        local output = xPlayer.Functions.GetItemByName(item)
+
+        return output.count > 0 or output.amount > 0
     end
 
     self.clearMeta = function(meta)
@@ -235,7 +241,7 @@ BRIDGE.getPlayerObject = function(player)
             return 'fail', 'Invalid data passed'
         end
 
-        return xPlayer.Functions.GetMeta(meta, index)
+        return xPlayer.Functions.GetMetaData(meta, index)
     end
 
     self.setMeta = function(meta, index, subIndex)
@@ -258,36 +264,36 @@ BRIDGE.getSocietyObject = function(job)
     self.money = self.getSocietyMoney()
 
     self.getSocietyMoney = function()
-        return exports['Renewed-Banking']:getAccountMoney(job) or 0
+        return exports['qb-banking']:GetAccountBalance(job) or 0
     end
 
-    self.addSocietyMoney = function(amount)
+    self.addSocietyMoney = function(amount, reason)
         if not amount then
             return 'fail', 'Invalid data passed'
         end
 
-        exports.qbx_management:AddMoney(job, amount)
+        exports['qb-banking']:AddMoney(job, amount, reason)
 
         return 'success'
     end
 
-    self.setSocietyMoney = function(amount)
+    self.setSocietyMoney = function(amount, reason)
         if not amount then
             return 'fail', 'Invalid data passed'
         end
 
-        exports.qbx_management:RemoveMoney(job, exports['Renewed-Banking']:getAccountMoney(job) or 0)
-        exports.qbx_management:AddMoney(job, amount)
+        exports['qb-banking']:RemoveMoney(job, exports['qb-banking']:GetAccountBalance(job), reason)
+        exports['qb-banking']:AddMoney(job, amount, reason)
 
         return 'success'
     end
 
-    self.removeSocietyMoney = function(amount)
+    self.removeSocietyMoney = function(amount, reason)
         if not amount then
             return 'fail', 'Invalid data passed'
         end
 
-        exports.qbx_management:RemoveMoney(job, amount)
+        exports['qb-banking']:RemoveMoney(job, amount, reason)
 
         return 'success'
     end
@@ -302,11 +308,11 @@ BRIDGE.getJobObject = function(job, grade)
     self.grade = grade
 
     self.doesJobExist = function()
-        return QBX:GetJobs()[job] == true
+        return QB.Shared.Jobs[job] == true
     end
 
     self.getJobs = function()
-        return QBX:GetJobs()
+        return QB.Shared.Jobs
     end
 
     return self
@@ -317,12 +323,12 @@ BRIDGE.getVehicleObject = function()
     local self = {}
 
     self.getAllVehicles = function() --owner plate
-        local response = MYSQL:query_async('SELECT `license`, `plate` FROM `player_vehicles`', {})
+        local response = MYSQL:query_async('SELECT `citizenid`, `plate` FROM `player_vehicles`', {})
         local DATA = {}
 
         for k, data in pairs(response) do
             DATA[#DATA + 1] = {
-                owner = data.license,
+                owner = data.citizenid,
                 plate = data.plate
             }
         end

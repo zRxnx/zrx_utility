@@ -60,7 +60,7 @@ end
 ---@param player number
 BRIDGE.getPlayerObject = function(player)
     local xPlayer = ESX.GetPlayerFromId(player)
-    local var, job = xPlayer.variables, xPlayer.job
+    local var, job2 = xPlayer.variables, xPlayer.job
     local status = {}
     local inventory, loadout = {}, {}
 
@@ -105,12 +105,12 @@ BRIDGE.getPlayerObject = function(player)
     self.addonAccounts = var.addonAccounts
 
     self.job = {
-        name = job.name,
-        label = job.label,
-        grade = job.grade,
-        grade_name = job.grade_name,
-        grade_label = job.grade_label,
-        grade_salary = job.grade_salary,
+        name = job2.name,
+        label = job2.label,
+        grade = job2.grade,
+        grade_name = job2.grade_name,
+        grade_label = job2.grade_label,
+        grade_salary = job2.grade_salary,
     }
 
     self.setMaxWeight = function(value)

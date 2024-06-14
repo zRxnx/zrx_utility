@@ -9,3 +9,10 @@ exports('GetUtility', function()
         Framework = BRIDGE.Framework,
     }
 end)
+
+--| Not finished yet
+RegisterConsoleListener(function(channel, message)
+    if not channel == 'citizen-server-impl' then
+        return
+    end
+end)

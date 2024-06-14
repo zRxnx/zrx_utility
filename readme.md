@@ -10,7 +10,7 @@ An utility library for my scripts
 
 ### Features
 
-- Bridge (ESX, QBX, OX)
+- Bridge (ESX, QBX, QB, OX)
 - Discord log with many information
 - Utility functions
 - Update checker
