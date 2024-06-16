@@ -56,9 +56,10 @@ BRIDGE.getPlayerObject = function()
     self.loadout = xPlayer.loadout
     self.accounts = xPlayer.accounts
 
-    self.name = xPlayer.firstName .. ' ' .. xPlayer.lastName
-    self.firstName = xPlayer.firstName
-    self.lastName = xPlayer.lastName
+    self.firstName = xPlayer?.firstName or xPlayer?.firstname
+    self.lastName = xPlayer?.lastName or xPlayer?.lastname
+    self.name = self.firstName .. ' ' .. self.lastName
+
     self.sex = xPlayer.sex
     self.height = xPlayer.height
     self.dob = xPlayer.dateofbirth

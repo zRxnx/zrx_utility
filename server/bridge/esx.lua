@@ -93,9 +93,10 @@ BRIDGE.getPlayerObject = function(player)
     self.inventory = inventory
     self.loadout = loadout
 
-    self.name = var.firstName .. ' ' .. var.lastName
-    self.firstName = var.firstName
-    self.lastName = var.lastName
+    self.firstName = var?.firstName or var?.firstname
+    self.lastName = var?.lastName or var?.lastname
+    self.name = self.firstName .. ' ' .. self.lastName
+
     self.sex = var.sex
     self.height = var.height
     self.dob = var.dateofbirth
