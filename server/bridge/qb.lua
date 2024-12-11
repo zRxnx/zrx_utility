@@ -14,13 +14,26 @@ BRIDGE = {
     PLAYER_JOB = 'zrx_utility:bridge:setJob',
 }
 
+CreateThread(function()
+    Wait(5000)
+    print([[
+
+    W A R N I N G
+    
+    ESX IS THE ONLY MAINTAINED FRAMEWORK
+    OTHER FRAMEWORKS WILL NOT 100% WORK AND WILL NOT GET SUPPORT
+    
+    ALSO OX_INVENTORY IS THE ONLY SUPPORTED INVENTORY BESIDE ESX DEFAULT ONE
+    ]])
+end)
+
 --| Handlers |--
 RegisterNetEvent('QBCore:Server:OnPlayerUnload', function(player, reason)
     TriggerEvent('zrx_utility:bridge:playerDropped', player, reason)
 end)
 
 RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function(player)
-    TriggerEvent('zrx_utility:bridge:playerLoaded', player, QBX:GetPlayer(player))
+    TriggerEvent('zrx_utility:bridge:playerLoaded', player, QB:GetPlayer(player))
 end)
 
 RegisterNetEvent('QBCore:Server:OnJobUpdate', function(player, job)

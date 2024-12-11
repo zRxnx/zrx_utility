@@ -55,6 +55,12 @@ BRIDGE.notification = function(player, msg, title, type, color, time)
     Config.Notification(player, msg, title, type, color, time)
 end
 
+---@param filter string
+---@param value string
+BRIDGE.getExtendedPlayers = function(filter, value)
+    return ESX.GetExtendedPlayers(filter, value)
+end
+
 
 --| Player Object |--
 ---@param player number
