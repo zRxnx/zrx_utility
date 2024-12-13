@@ -5,7 +5,7 @@ use_experimental_fxv2_oal 'yes'
 
 author 'zRxnx'
 description 'Utility library for my resources'
-version '2.3.1'
+version '2.4.0'
 
 docs 'https://docs.zrxnx.at'
 discord 'https://discord.gg/mcN25FJ33K'
@@ -18,7 +18,8 @@ shared_scripts {
 client_scripts {
     'client/*.lua',
     'client/keymapping/*.lua',
-    'client/menu/*.lua',
+    'client/interface/*.lua',
+    'client/gta/*.lua',
     'client/bridge/*.lua',
 }
 

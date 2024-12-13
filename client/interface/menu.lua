@@ -1,5 +1,3 @@
-local IsPauseMenuActive = IsPauseMenuActive
-
 ---@param menu table
 ---@param options table
 ---@param useContext boolean

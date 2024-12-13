@@ -20,6 +20,19 @@ BRIDGE = {
     PLAYER_JOB = 'zrx_utility:bridge:setJob',
 }
 
+CreateThread(function()
+    Wait(5000)
+    print([[
+
+    W A R N I N G
+    
+    ESX IS THE ONLY MAINTAINED FRAMEWORK
+    OTHER FRAMEWORKS WILL NOT 100% WORK AND WILL NOT GET SUPPORT
+    
+    ALSO OX_INVENTORY IS THE ONLY SUPPORTED INVENTORY BESIDE ESX DEFAULT ONE
+    ]])
+end)
+
 --| Handlers |--
 RegisterNetEvent('ox:playerLoaded', function(userid, charid)
     LOADED = true

@@ -1,15 +1,4 @@
 ---@diagnostic disable: duplicate-set-field
-local GetPlayerName = GetPlayerName
-local GetNumPlayerTokens = GetNumPlayerTokens
-local GetPlayerGuid = GetPlayerGuid
-local GetPlayerToken = GetPlayerToken
-local PerformHttpRequest = PerformHttpRequest
-local GetPlayerPing = GetPlayerPing
-local GetResourceMetadata = GetResourceMetadata
-local GetCurrentResourceName = GetCurrentResourceName
-local GetPlayerIdentifierByType = GetPlayerIdentifierByType
-local GetInvokingResource = GetInvokingResource
-local GetPlayerEndpoint = GetPlayerEndpoint
 
 ---@param player number
 ---@return table

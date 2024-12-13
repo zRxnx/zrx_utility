@@ -55,6 +55,32 @@ BRIDGE.notification = function(player, msg, title, type, color, time)
     Config.Notification(player, msg, title, type, color, time)
 end
 
+---@param filter string
+---@param value string
+BRIDGE.getExtendedPlayers = function(filter, value)
+    return ESX.GetExtendedPlayers(filter, value)
+end
+
+--| Player Object |--
+---@param identifier string
+BRIDGE.getPlayerObjectByIdentifier = function(identifier)
+    local player = 0
+
+    for k, target in pairs(GetPlayers()) do
+        target = tonumber(target)
+
+        if identifier:find(GetPlayerIdentifierByType(target, 'license'):gsub('license:', '')) then
+            player = target
+            break
+        end
+    end
+
+    if player > 0 then
+        return BRIDGE.getPlayerObject(player)
+    else
+        return {}
+    end
+end
 
 --| Player Object |--
 ---@param player number

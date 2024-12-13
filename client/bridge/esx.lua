@@ -41,6 +41,29 @@ BRIDGE.notification = function(msg, title, type, color, time)
     Config.Notification(nil, msg, title, type, color, time)
 end
 
+---@param header string
+---@param content string
+---@param centered boolean
+---@param cancel boolean
+BRIDGE.alertDialog = function(header, content, centered, cancel)
+    return Config.AlertDialog(header, content, centered, cancel)
+end
+
+---@param text string
+---@param icon string
+---@param position string
+BRIDGE.showTextUI = function(text, icon, position)
+    return Config.ShowTextUI(text, icon, position)
+end
+
+BRIDGE.hideTextUI = function()
+    return Config.HideTextUI()
+end
+
+BRIDGE.isTextUIOpen = function()
+    return Config.IsTextUIOpen()
+end
+
 --| Player Object |--
 BRIDGE.getPlayerObject = function()
     local xPlayer = ESX.GetPlayerData()
